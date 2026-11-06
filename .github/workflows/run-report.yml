@@ -1,0 +1,33 @@
+name: Générer le Rapport 3D
+
+on:
+  workflow_dispatch: # Lancement manuel en un clic
+
+jobs:
+  build-report:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+
+    steps:
+    - name: Récupérer le code
+      uses: actions/checkout@v4
+
+    - name: Configurer Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Lancer le générateur de rapport
+      run: |
+        python generate_report.py
+
+    - name: Sauvegarder et commiter le fichier report.html
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        
+        git add report.html || true
+        git diff --staged --quiet || git commit -m "🤖 Mise à jour automatique du fichier report.html"
+        git push
