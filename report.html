@@ -31,13 +31,13 @@
 
     <div class="header">
         <h1>📊 Dashboard 3D Dynamique</h1>
-        <div style="font-size: 0.85rem; color: #64748b;">⏱️ Généré le : <b>07/11/2026 à 12:47:19</b></div>
+        <div style="font-size: 0.85rem; color: #64748b;">⏱️ Généré le : <b>07/11/2026 à 12:50:46</b></div>
     </div>
 
     <div class="card">
         <h2>Visualiseur du Projet</h2>
         <p><b>Nom du projet :</b> <span class="badge">Support telephone portable</span></p>
-        <p><b>Matériau recommandé :</b> <b>PETG</b></p>
+        <p><b>Matériau recommandé :</b> <b>PLA+ / PETG</b></p>
         <div id="viewer-container"></div>
         <p style="text-align:center; font-size:0.85rem; color:#64748b; margin-top: 10px;">💡 Glissez avec la souris ou au doigt pour faire pivoter le modèle 3D.</p>
     </div>
@@ -49,7 +49,7 @@
         </div>
         <div class="stat-card">
             <h3>Remplissage (Infill)</h3>
-            <p>35% (Gyroid)</p>
+            <p>20% (Gyroid)</p>
         </div>
         <div class="stat-card">
             <h3>Nombre de parois</h3>
@@ -57,7 +57,7 @@
         </div>
         <div class="stat-card">
             <h3>Supports d'impression</h3>
-            <p>Oui (Brim)</p>
+            <p>Non (Design auto-portant)</p>
         </div>
     </div>
 
@@ -65,9 +65,9 @@
         <h2>🛠️ Checklist de Fabrication</h2>
         <div class="progress-bar"><div id="progress" class="progress-fill"></div></div>
         <ul>
-            <li><input type="checkbox" onchange="updateProgress()"> Préparation de la géométrie 3D pour : Support telephone portable</li>
+            <li><input type="checkbox" onchange="updateProgress()"> Préparation du design 3D pour : Support telephone portable</li>
             <li><input type="checkbox" onchange="updateProgress()"> Calibration du plateau et vérification du Z-Offset.</li>
-            <li><input type="checkbox" onchange="updateProgress()"> Lancement du Slicing avec le matériau PETG.</li>
+            <li><input type="checkbox" onchange="updateProgress()"> Lancement du Slicing avec le matériau PLA+ / PETG.</li>
             <li><input type="checkbox" onchange="updateProgress()"> Contrôle qualité final et assemblage.</li>
         </ul>
     </div>
@@ -94,18 +94,26 @@
         const group = new THREE.Group();
         
         
-        const baseGeo = new THREE.BoxGeometry(40, 10, 30);
-        const baseMat = new THREE.MeshStandardMaterial({ color: 0x3b82f6, roughness: 0.3 });
+        // Socle incliné pour téléphone
+        const baseGeo = new THREE.BoxGeometry(35, 6, 45);
+        const baseMat = new THREE.MeshStandardMaterial({ color: 0x6366f1, roughness: 0.3 });
         const base = new THREE.Mesh(baseGeo, baseMat);
-        base.position.y = -5;
+        base.position.y = -8;
         group.add(base);
 
-        const cylGeo = new THREE.CylinderGeometry(8, 8, 25, 32);
-        const cylMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.8 });
-        const cylinder = new THREE.Mesh(cylGeo, cylMat);
-        cylinder.rotation.z = Math.PI / 4;
-        cylinder.position.set(0, 10, 0);
-        group.add(cylinder);
+        // Dossier d'appui incliné à 60°
+        const backGeo = new THREE.BoxGeometry(32, 45, 5);
+        const backMat = new THREE.MeshStandardMaterial({ color: 0x6366f1, roughness: 0.3 });
+        const back = new THREE.Mesh(backGeo, backMat);
+        back.position.set(0, 10, -10);
+        back.rotation.x = Math.PI / 6;
+        group.add(back);
+
+        // Crochet retenue bas
+        const lipGeo = new THREE.BoxGeometry(32, 8, 6);
+        const lip = new THREE.Mesh(lipGeo, baseMat);
+        lip.position.set(0, -3, 15);
+        group.add(lip);
         
 
         scene.add(group);
