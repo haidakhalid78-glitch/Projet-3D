@@ -1,163 +1,113 @@
 import os
-import json
 from datetime import datetime
 
-def generate_3d_report():
-    model_description = "Support mural inclinable pour caméra de sécurité avec système de verrouillage par vis."
-    
-    # Horodatage dynamique pour garantir que le fichier change à chaque run
+def generate_dynamic_report():
+    # Récupère l'idée passée par le workflow GitHub (ou valeur par défaut en local)
+    project_idea = os.getenv("PROJECT_IDEA", "Projet 3D personnalisé")
     generation_time = datetime.now().strftime("%d/%m/%Y à %H:%M:%S")
     
-    print(f"🚀 Génération du rapport avec visualiseur 3D interactif pour : '{model_description}' (Généré le {generation_time})")
+    print(f"🚀 Génération dynamique pour le projet : '{project_idea}'")
 
-    report_data = {
-        "title": model_description,
-        "material": "PETG ou PLA+",
-        "timestamp": generation_time,
-        "settings": {
-            "layer_height": "0.2 mm",
-            "infill_percentage": 35,
-            "infill_pattern": "Gyroid",
-            "walls": 4,
-            "supports_needed": True,
-            "bed_adhesion": "Brim"
-        },
-        "checklist": [
-            "Nettoyer le plateau d'impression à l'alcool isopropylique (IPA).",
-            "Vérifier la calibration du premier niveau de couche (Z-offset).",
-            "Lancer l'impression 3D avec les paramètres recommandés.",
-            "Retirer délicatement les supports d'impression après refroidissement.",
-            "Effectuer un ponçage léger des zones de contact."
-        ]
-    }
-
-    # Création du fichier HTML avec un visualiseur 3D intégré (Three.js) et la date dynamique
     html_content = f"""<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Rapport 3D Interactif</title>
-    <!-- Chargement de la bibliothèque 3D Three.js -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapport Dynamique : {project_idea}</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
-        body {{ font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; background: #f8fafc; color: #1e293b; max-width: 900px; margin: 40px auto; padding: 20px; }}
-        .card {{ background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); margin-bottom: 20px; }}
-        h1 {{ color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }}
-        h2 {{ color: #334155; margin-top: 0; }}
-        #viewer-container {{ width: 100%; height: 350px; background: #0f172a; border-radius: 8px; position: relative; overflow: hidden; }}
+        :root {{ --primary: #3b82f6; --bg: #0f172a; --card-bg: #ffffff; --text: #1e293b; }}
+        * {{ box-sizing: border-box; }}
+        body {{ font-family: system-ui, -apple-system, sans-serif; background: #f8fafc; color: var(--text); max-width: 900px; margin: 20px auto; padding: 15px; }}
+        .card {{ background: var(--card-bg); padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); margin-bottom: 20px; }}
+        h1 {{ color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-top: 0; }}
+        #viewer-container {{ width: 100%; height: 380px; background: #0f172a; border-radius: 8px; position: relative; overflow: hidden; touch-action: none; cursor: grab; }}
+        #viewer-container:active {{ cursor: grabbing; }}
         ul {{ list-style: none; padding: 0; }}
         li {{ padding: 12px; margin: 8px 0; background: #f1f5f9; border-radius: 6px; display: flex; align-items: center; }}
-        input[type="checkbox"] {{ margin-right: 15px; transform: scale(1.4); cursor: pointer; }}
-        .badge {{ display: inline-block; background: #3b82f6; color: white; padding: 4px 10px; border-radius: 4px; font-size: 0.85rem; font-weight: bold; }}
-        .instruction {{ font-size: 0.9rem; color: #64748b; text-align: center; margin-top: 8px; }}
-        .meta-info {{ font-size: 0.85rem; color: #64748b; margin-top: -5px; margin-bottom: 15px; }}
+        input[type="checkbox"] {{ margin-right: 15px; transform: scale(1.3); cursor: pointer; }}
+        .badge {{ display: inline-block; background: var(--primary); color: white; padding: 4px 10px; border-radius: 4px; font-weight: bold; }}
+        .progress-bar {{ width: 100%; height: 10px; background: #e2e8f0; border-radius: 5px; overflow: hidden; margin-bottom: 15px; }}
+        .progress-fill {{ height: 100%; background: #22c55e; width: 0%; transition: width 0.3s; }}
     </style>
 </head>
 <body>
+
     <div class="card">
-        <h1>📑 Rapport de Projet 3D Interactif</h1>
-        <p class="meta-info">⏱️ Généré automatiquement le : <b>{report_data['timestamp']}</b></p>
-        <p><b>Objet :</b> {report_data['title']}</p>
-        <p><b>Matériau recommandé :</b> <span class="badge">{report_data['material']}</span></p>
+        <h1>📑 Rapport 3D Dynamique</h1>
+        <p>⏱️ Généré le : <b>{generation_time}</b></p>
+        <p><b>Idée / Objet du Projet :</b> <span class="badge">{project_idea}</span></p>
         
-        <!-- Contenu Visuel 3D en direct -->
-        <h3>Aperçu 3D du Modèle :</h3>
         <div id="viewer-container"></div>
-        <p class="instruction">💡 Astuce : Cliquez et glissez avec votre souris (ou votre doigt) pour faire pivoter l'objet en 3D.</p>
+        <p style="text-align:center; font-size:0.85rem; color:#64748b;">💡 Glissez votre doigt ou la souris pour faire pivoter la forme 3D.</p>
     </div>
 
     <div class="card">
-        <h2>⚙️ Paramètres Slicer Optimisés</h2>
+        <h2>🛠️ Checklist de Fabrication</h2>
+        <div class="progress-bar"><div id="progress" class="progress-fill"></div></div>
         <ul>
-            <li><b>Hauteur de couche :</b> {report_data['settings']['layer_height']}</li>
-            <li><b>Remplissage (Infill) :</b> {report_data['settings']['infill_percentage']}% ({report_data['settings']['infill_pattern']})</li>
-            <li><b>Parois / Murs :</b> {report_data['settings']['walls']}</li>
-            <li><b>Supports nécessaires :</b> {'Oui' if report_data['settings']['supports_needed'] else 'Non'}</li>
-            <li><b>Adhésion au plateau :</b> {report_data['settings']['bed_adhesion']}</li>
+            <li><input type="checkbox" onchange="updateProgress()"> Valider le design CAO / structurel pour : {project_idea}</li>
+            <li><input type="checkbox" onchange="updateProgress()"> Préparer les paramètres du Slicer (Optimisation parois/remplissage).</li>
+            <li><input type="checkbox" onchange="updateProgress()"> Lancer l'impression 3D ou la fabrication.</li>
+            <li><input type="checkbox" onchange="updateProgress()"> Contrôle qualité et finitions.</li>
         </ul>
     </div>
 
-    <div class="card">
-        <h2>🛠️ Guide de Fabrication & Checklist</h2>
-        <ul>
-"""
-    for task in report_data["checklist"]:
-        html_content += f'            <li><input type="checkbox"> {task}</li>\n'
-    
-    html_content += f"""        </ul>
-    </div>
-
-    <!-- Script JavaScript pour générer la forme 3D interactive -->
     <script>
         const container = document.getElementById('viewer-container');
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x0f172a);
 
         const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-        camera.position.set(50, 40, 50);
+        camera.position.set(40, 40, 40);
         camera.lookAt(0, 0, 0);
 
         const renderer = new THREE.WebGLRenderer({{ antialias: true }});
         renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         container.appendChild(renderer.domElement);
 
-        // Lumières
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-        scene.add(ambientLight);
-        const pointLight = new THREE.PointLight(0xffffff, 0.8);
-        pointLight.position.set(50, 50, 50);
+        scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+        const pointLight = new THREE.PointLight(0xffffff, 0.9);
+        pointLight.position.set(40, 40, 40);
         scene.add(pointLight);
 
-        // Création d'une représentation 3D de l'objet (Simule la géométrie du support de caméra)
+        // Forme 3D générique dynamique
         const group = new THREE.Group();
-        
-        // Base du support
-        const baseGeo = new THREE.BoxGeometry(40, 10, 30);
-        const mat = new THREE.MeshStandardMaterial({{ color: 0x3b82f6, roughness: 0.3 }});
-        const base = new THREE.Mesh(baseGeo, mat);
-        base.position.y = -5;
-        group.add(base);
-
-        // Tête inclinable / cylindre
-        const cylGeo = new THREE.CylinderGeometry(8, 8, 25, 32);
-        const cylMat = new THREE.MeshStandardMaterial({{ color: 0x94a3b8, metalness: 0.8 }});
-        const cylinder = new THREE.Mesh(cylGeo, cylMat);
-        cylinder.rotation.z = Math.PI / 4;
-        cylinder.position.set(0, 10, 0);
-        group.add(cylinder);
+        const geom1 = new THREE.BoxGeometry(30, 30, 30);
+        const mat1 = new THREE.MeshStandardMaterial({{ color: 0x3b82f6, roughness: 0.3 }});
+        group.add(new THREE.Mesh(geom1, mat1));
 
         scene.add(group);
 
-        // Animation de rotation interactive et automatique
-        let isDragging = false;
-        let previousMousePosition = {{ x: 0, y: 0 }};
-
-        container.addEventListener('mousedown', (e) => {{ isDragging = true; }});
-        container.addEventListener('mousemove', (e) => {{
-            if (isDragging) {{
-                const deltaX = e.clientX - previousMousePosition.x;
-                const deltaY = e.clientY - previousMousePosition.y;
-                group.rotation.y += deltaX * 0.01;
-                group.rotation.x += deltaY * 0.01;
-            }}
-            previousMousePosition = {{ x: e.clientX, y: e.clientY }};
+        let isDragging = false, prevX = 0, prevY = 0;
+        container.addEventListener('mousedown', e => {{ isDragging = true; prevX = e.clientX; prevY = e.clientY; }});
+        window.addEventListener('mousemove', e => {{
+            if (!isDragging) return;
+            group.rotation.y += (e.clientX - prevX) * 0.01;
+            group.rotation.x += (e.clientY - prevY) * 0.01;
+            prevX = e.clientX; prevY = e.clientY;
         }});
         window.addEventListener('mouseup', () => {{ isDragging = false; }});
 
-        // Tactique mobile
-        container.addEventListener('touchmove', (e) => {{
-            if(e.touches.length === 1) {{
-                let touch = e.touches[0];
-                group.rotation.y += 0.02;
-            }}
+        container.addEventListener('touchstart', e => {{ if (e.touches.length === 1) {{ isDragging = true; prevX = e.touches[0].clientX; prevY = e.touches[0].clientY; }} }}, {{passive: true}});
+        container.addEventListener('touchmove', e => {{
+            if (!isDragging || e.touches.length !== 1) return;
+            group.rotation.y += (e.touches[0].clientX - prevX) * 0.01;
+            group.rotation.x += (e.touches[0].clientY - prevY) * 0.01;
+            prevX = e.touches[0].clientX; prevY = e.touches[0].clientY;
         }}, {{passive: true}});
+        container.addEventListener('touchend', () => {{ isDragging = false; }});
+
+        function updateProgress() {{
+            const all = document.querySelectorAll('input[type="checkbox"]').length;
+            const checked = document.querySelectorAll('input[type="checkbox"]:checked').length;
+            document.getElementById('progress').style.width = (checked / all * 100) + '%';
+        }}
 
         function animate() {{
             requestAnimationFrame(animate);
-            // Légère rotation automatique si on ne touche pas
-            if (!isDragging) {{
-                group.rotation.y += 0.005;
-            }}
+            if (!isDragging) group.rotation.y += 0.005;
             renderer.render(scene, camera);
         }}
         animate();
@@ -168,7 +118,7 @@ def generate_3d_report():
     with open("report.html", "w", encoding="utf-8") as f:
         f.write(html_content)
 
-    print("✅ Rapport HTML avec horodatage dynamique généré avec succès !")
+    print("✅ Rapport dynamique généré avec succès !")
 
 if __name__ == "__main__":
-    generate_3d_report()
+    generate_dynamic_report()
