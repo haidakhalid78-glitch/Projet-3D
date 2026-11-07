@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       project_idea:
-        description: 'Nom ou idée du projet à générer'
+        description: 'Nom ou idée du projet (ex: Boitier Raspberry, Engrenage, etc.)'
         required: true
-        default: 'Support mural inclinable pour caméra de sécurité'
+        default: 'Boitier de protection électronique'
         type: string
 
 jobs:
@@ -24,17 +24,17 @@ jobs:
       with:
         python-version: '3.10'
 
-    - name: Lancer le générateur avec l'idée dynamique
+    - name: Lancer le script dynamique
       env:
         PROJECT_IDEA: ${{ github.event.inputs.project_idea }}
       run: |
-        python generate_report.py
+        python generate_report.py "$PROJECT_IDEA"
 
-    - name: Sauvegarder et commiter
+    - name: Commit et Push des modifications
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
         
-        git add report.html || true
-        git diff --staged --quiet || git commit -m "🤖 Rapport généré pour : ${{ github.event.inputs.project_idea }}"
+        git add report.html
+        git diff --staged --quiet || git commit -m "🤖 Mise à jour dashboard : ${{ github.event.inputs.project_idea }}"
         git push
