@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard 3D : Support smartphone multifunction</title>
+    <title>Dashboard 3D : Gun</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         :root { --primary: #3b82f6; --bg: #f8fafc; --card-bg: #ffffff; --text: #1e293b; --subtext: #64748b; }
@@ -31,13 +31,13 @@
 
     <div class="header">
         <h1>📊 Dashboard 3D Dynamique</h1>
-        <div style="font-size: 0.85rem; color: #64748b;">⏱️ Généré le : <b>07/11/2026 à 13:01:06</b></div>
+        <div style="font-size: 0.85rem; color: #64748b;">⏱️ Généré le : <b>07/11/2026 à 13:06:09</b></div>
     </div>
 
     <div class="card">
         <h2>Visualiseur du Projet</h2>
-        <p><b>Nom du projet :</b> <span class="badge">Support smartphone multifunction</span></p>
-        <p><b>Matériau recommandé :</b> <b>PLA+ / PETG</b></p>
+        <p><b>Nom du projet :</b> <span class="badge">Gun</span></p>
+        <p><b>Matériau recommandé :</b> <b>PLA</b></p>
         <div id="viewer-container"></div>
         <p style="text-align:center; font-size:0.85rem; color:#64748b; margin-top: 10px;">💡 Glissez avec la souris ou au doigt pour faire pivoter le modèle 3D.</p>
     </div>
@@ -49,15 +49,15 @@
         </div>
         <div class="stat-card">
             <h3>Remplissage (Infill)</h3>
-            <p>20% (Gyroid)</p>
+            <p>25% (Grid)</p>
         </div>
         <div class="stat-card">
             <h3>Nombre de parois</h3>
-            <p>4 murs</p>
+            <p>3 murs</p>
         </div>
         <div class="stat-card">
             <h3>Supports d'impression</h3>
-            <p>Non (Design auto-portant)</p>
+            <p>Oui</p>
         </div>
     </div>
 
@@ -65,9 +65,9 @@
         <h2>🛠️ Checklist de Fabrication</h2>
         <div class="progress-bar"><div id="progress" class="progress-fill"></div></div>
         <ul>
-            <li><input type="checkbox" onchange="updateProgress()"> Préparation du design 3D pour : Support smartphone multifunction</li>
+            <li><input type="checkbox" onchange="updateProgress()"> Préparation du design 3D pour : Gun</li>
             <li><input type="checkbox" onchange="updateProgress()"> Calibration du plateau et vérification du Z-Offset.</li>
-            <li><input type="checkbox" onchange="updateProgress()"> Lancement du Slicing avec le matériau PLA+ / PETG.</li>
+            <li><input type="checkbox" onchange="updateProgress()"> Lancement du Slicing avec le matériau PLA.</li>
             <li><input type="checkbox" onchange="updateProgress()"> Contrôle qualité final et assemblage.</li>
         </ul>
     </div>
@@ -94,26 +94,10 @@
         const group = new THREE.Group();
         
         
-        // Socle incliné pour téléphone
-        const baseGeo = new THREE.BoxGeometry(35, 6, 45);
-        const baseMat = new THREE.MeshStandardMaterial({ color: 0x6366f1, roughness: 0.3 });
-        const base = new THREE.Mesh(baseGeo, baseMat);
-        base.position.y = -8;
-        group.add(base);
-
-        // Dossier d'appui incliné à 60°
-        const backGeo = new THREE.BoxGeometry(32, 45, 5);
-        const backMat = new THREE.MeshStandardMaterial({ color: 0x6366f1, roughness: 0.3 });
-        const back = new THREE.Mesh(backGeo, backMat);
-        back.position.set(0, 10, -10);
-        back.rotation.x = Math.PI / 6;
-        group.add(back);
-
-        // Crochet retenue bas
-        const lipGeo = new THREE.BoxGeometry(32, 8, 6);
-        const lip = new THREE.Mesh(lipGeo, baseMat);
-        lip.position.set(0, -3, 15);
-        group.add(lip);
+        const shapeGeo = new THREE.TorusKnotGeometry(12, 4, 64, 16);
+        const shapeMat = new THREE.MeshStandardMaterial({ color: 0x8b5cf6, roughness: 0.2 });
+        const shape = new THREE.Mesh(shapeGeo, shapeMat);
+        group.add(shape);
         
 
         scene.add(group);
