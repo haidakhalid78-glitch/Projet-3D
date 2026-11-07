@@ -1,14 +1,19 @@
 import os
 import json
+from datetime import datetime
 
 def generate_3d_report():
     model_description = "Support mural inclinable pour caméra de sécurité avec système de verrouillage par vis."
     
-    print(f"🚀 Génération du rapport avec visualiseur 3D interactif pour : '{model_description}'")
+    # Horodatage dynamique pour garantir que le fichier change à chaque run
+    generation_time = datetime.now().strftime("%d/%m/%Y à %H:%M:%S")
+    
+    print(f"🚀 Génération du rapport avec visualiseur 3D interactif pour : '{model_description}' (Généré le {generation_time})")
 
     report_data = {
         "title": model_description,
         "material": "PETG ou PLA+",
+        "timestamp": generation_time,
         "settings": {
             "layer_height": "0.2 mm",
             "infill_percentage": 35,
@@ -26,7 +31,7 @@ def generate_3d_report():
         ]
     }
 
-    # Création du fichier HTML avec un visualiseur 3D intégré (Three.js)
+    # Création du fichier HTML avec un visualiseur 3D intégré (Three.js) et la date dynamique
     html_content = f"""<!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -45,11 +50,13 @@ def generate_3d_report():
         input[type="checkbox"] {{ margin-right: 15px; transform: scale(1.4); cursor: pointer; }}
         .badge {{ display: inline-block; background: #3b82f6; color: white; padding: 4px 10px; border-radius: 4px; font-size: 0.85rem; font-weight: bold; }}
         .instruction {{ font-size: 0.9rem; color: #64748b; text-align: center; margin-top: 8px; }}
+        .meta-info {{ font-size: 0.85rem; color: #64748b; margin-top: -5px; margin-bottom: 15px; }}
     </style>
 </head>
 <body>
     <div class="card">
         <h1>📑 Rapport de Projet 3D Interactif</h1>
+        <p class="meta-info">⏱️ Généré automatiquement le : <b>{report_data['timestamp']}</b></p>
         <p><b>Objet :</b> {report_data['title']}</p>
         <p><b>Matériau recommandé :</b> <span class="badge">{report_data['material']}</span></p>
         
@@ -161,7 +168,7 @@ def generate_3d_report():
     with open("report.html", "w", encoding="utf-8") as f:
         f.write(html_content)
 
-    print("✅ Rapport HTML avec visualiseur 3D interactif généré avec succès !")
+    print("✅ Rapport HTML avec horodatage dynamique généré avec succès !")
 
 if __name__ == "__main__":
     generate_3d_report()
