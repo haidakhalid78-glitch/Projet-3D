@@ -1,12 +1,17 @@
-name: Générer le Rapport 3D
+name: Générateur de Rapport Dynamique
 
 on:
-  workflow_dispatch: # Lancement manuel en un clic
+  workflow_dispatch:
+    inputs:
+      project_idea:
+        description: 'Nom ou idée du projet à générer'
+        required: true
+        default: 'Support mural inclinable pour caméra de sécurité'
+        type: string
 
 jobs:
-  build-report:
+  build:
     runs-on: ubuntu-latest
-    
     permissions:
       contents: write
 
@@ -19,15 +24,17 @@ jobs:
       with:
         python-version: '3.10'
 
-    - name: Lancer le générateur de rapport
+    - name: Lancer le générateur avec l'idée dynamique
+      env:
+        PROJECT_IDEA: ${{ github.event.inputs.project_idea }}
       run: |
         python generate_report.py
 
-    - name: Sauvegarder et commiter le fichier report.html
+    - name: Sauvegarder et commiter
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
         
         git add report.html || true
-        git diff --staged --quiet || git commit -m "🤖 Mise à jour automatique du fichier report.html"
+        git diff --staged --quiet || git commit -m "🤖 Rapport généré pour : ${{ github.event.inputs.project_idea }}"
         git push
