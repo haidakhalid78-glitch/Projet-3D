@@ -5,8 +5,19 @@ from datetime import datetime
 def get_project_config(idea):
     idea_lower = idea.lower()
     
-    # 1. Détection caméra / support mural
-    if "caméra" in idea_lower or "camera" in idea_lower or "support" in idea_lower:
+    # 1. Détection Téléphone / Smartphone
+    if any(k in idea_lower for k in ["telephone", "téléphone", "phone", "smartphone"]):
+        return {
+            "type": "phone_stand",
+            "material": "PLA+ / PETG",
+            "color": "0x6366f1",  # Indigo / Purple
+            "layer_height": "0.2 mm",
+            "infill": "20% (Gyroid)",
+            "walls": 4,
+            "supports": "Non (Design auto-portant)"
+        }
+    # 2. Détection caméra / support mural
+    elif any(k in idea_lower for k in ["caméra", "camera", "mural"]):
         return {
             "type": "camera",
             "material": "PETG",
@@ -16,8 +27,8 @@ def get_project_config(idea):
             "walls": 4,
             "supports": "Oui (Brim)"
         }
-    # 2. Détection boîtier / électronique (ex: Raspberry, Arduino)
-    elif "boitier" in idea_lower or "boîtier" in idea_lower or "case" in idea_lower:
+    # 3. Détection boîtier / électronique
+    elif any(k in idea_lower for k in ["boitier", "boîtier", "case", "raspberry"]):
         return {
             "type": "box",
             "material": "PLA+",
@@ -27,8 +38,8 @@ def get_project_config(idea):
             "walls": 3,
             "supports": "Non"
         }
-    # 3. Détection engrenage / pièce mécanique
-    elif "engrenage" in idea_lower or "gear" in idea_lower or "mecanique" in idea_lower:
+    # 4. Détection engrenage / pièce mécanique
+    elif any(k in idea_lower for k in ["engrenage", "gear", "mecanique"]):
         return {
             "type": "gear",
             "material": "ABS / Carbon",
@@ -38,7 +49,7 @@ def get_project_config(idea):
             "walls": 5,
             "supports": "Non"
         }
-    # 4. Par défaut (Objet générique)
+    # 5. Par défaut (Forme abstraite / Torus)
     else:
         return {
             "type": "generic",
@@ -51,7 +62,6 @@ def get_project_config(idea):
         }
 
 def generate_report():
-    # Récupération de l'idée depuis l'environnement ou les arguments système
     project_idea = os.getenv("PROJECT_IDEA")
     if not project_idea and len(sys.argv) > 1:
         project_idea = sys.argv[1]
@@ -61,40 +71,63 @@ def generate_report():
     config = get_project_config(project_idea)
     generation_time = datetime.now().strftime("%d/%m/%Y à %H:%M:%S")
 
-    # Modélisation Three.js selon le type
-    if config["type"] == "camera":
-        js_geometry = """
+    # Géométries 3D Three.js adaptées selon l'idée
+    if config["type"] == "phone_stand":
+        js_geometry = f"""
+        // Socle incliné pour téléphone
+        const baseGeo = new THREE.BoxGeometry(35, 6, 45);
+        const baseMat = new THREE.MeshStandardMaterial({{ color: {config['color']}, roughness: 0.3 }});
+        const base = new THREE.Mesh(baseGeo, baseMat);
+        base.position.y = -8;
+        group.add(base);
+
+        // Dossier d'appui incliné à 60°
+        const backGeo = new THREE.BoxGeometry(32, 45, 5);
+        const backMat = new THREE.MeshStandardMaterial({{ color: {config['color']}, roughness: 0.3 }});
+        const back = new THREE.Mesh(backGeo, backMat);
+        back.position.set(0, 10, -10);
+        back.rotation.x = Math.PI / 6;
+        group.add(back);
+
+        // Crochet retenue bas
+        const lipGeo = new THREE.BoxGeometry(32, 8, 6);
+        const lip = new THREE.Mesh(lipGeo, baseMat);
+        lip.position.set(0, -3, 15);
+        group.add(lip);
+        """
+    elif config["type"] == "camera":
+        js_geometry = f"""
         const baseGeo = new THREE.BoxGeometry(40, 10, 30);
-        const baseMat = new THREE.MeshStandardMaterial({ color: """ + config["color"] + """, roughness: 0.3 });
+        const baseMat = new THREE.MeshStandardMaterial({{ color: {config['color']}, roughness: 0.3 }});
         const base = new THREE.Mesh(baseGeo, baseMat);
         base.position.y = -5;
         group.add(base);
 
         const cylGeo = new THREE.CylinderGeometry(8, 8, 25, 32);
-        const cylMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.8 });
+        const cylMat = new THREE.MeshStandardMaterial({{ color: 0x94a3b8, metalness: 0.8 }});
         const cylinder = new THREE.Mesh(cylGeo, cylMat);
         cylinder.rotation.z = Math.PI / 4;
         cylinder.position.set(0, 10, 0);
         group.add(cylinder);
         """
     elif config["type"] == "box":
-        js_geometry = """
+        js_geometry = f"""
         const boxGeo = new THREE.BoxGeometry(45, 20, 35);
-        const boxMat = new THREE.MeshStandardMaterial({ color: """ + config["color"] + """, roughness: 0.4 });
+        const boxMat = new THREE.MeshStandardMaterial({{ color: {config['color']}, roughness: 0.4 }});
         const box = new THREE.Mesh(boxGeo, boxMat);
         group.add(box);
         """
     elif config["type"] == "gear":
-        js_geometry = """
+        js_geometry = f"""
         const gearGeo = new THREE.CylinderGeometry(20, 20, 10, 16);
-        const gearMat = new THREE.MeshStandardMaterial({ color: """ + config["color"] + """, metalness: 0.5 });
+        const gearMat = new THREE.MeshStandardMaterial({{ color: {config['color']}, metalness: 0.5 }});
         const gear = new THREE.Mesh(gearGeo, gearMat);
         group.add(gear);
         """
     else:
-        js_geometry = """
+        js_geometry = f"""
         const shapeGeo = new THREE.TorusKnotGeometry(12, 4, 64, 16);
-        const shapeMat = new THREE.MeshStandardMaterial({ color: """ + config["color"] + """, roughness: 0.2 });
+        const shapeMat = new THREE.MeshStandardMaterial({{ color: {config['color']}, roughness: 0.2 }});
         const shape = new THREE.Mesh(shapeGeo, shapeMat);
         group.add(shape);
         """
@@ -166,7 +199,7 @@ def generate_report():
         <h2>🛠️ Checklist de Fabrication</h2>
         <div class="progress-bar"><div id="progress" class="progress-fill"></div></div>
         <ul>
-            <li><input type="checkbox" onchange="updateProgress()"> Préparation de la géométrie 3D pour : {project_idea}</li>
+            <li><input type="checkbox" onchange="updateProgress()"> Préparation du design 3D pour : {project_idea}</li>
             <li><input type="checkbox" onchange="updateProgress()"> Calibration du plateau et vérification du Z-Offset.</li>
             <li><input type="checkbox" onchange="updateProgress()"> Lancement du Slicing avec le matériau {config['material']}.</li>
             <li><input type="checkbox" onchange="updateProgress()"> Contrôle qualité final et assemblage.</li>
@@ -235,7 +268,7 @@ def generate_report():
     with open("report.html", "w", encoding="utf-8") as f:
         f.write(html_content)
 
-    print("✅ Nouveau dashboard généré avec succès !")
+    print("✅ Dashboard mis à jour avec détection téléphone !")
 
 if __name__ == "__main__":
     generate_report()
