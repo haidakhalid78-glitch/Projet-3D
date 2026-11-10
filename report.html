@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard 3D : Boitier de protection électronique</title>
+    <title>Dashboard 3D : Support mural inclinable pour caméra de sécurité</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         :root { --primary: #3b82f6; --bg: #f8fafc; --card-bg: #ffffff; --text: #1e293b; --subtext: #64748b; }
@@ -31,13 +31,13 @@
 
     <div class="header">
         <h1>📊 Dashboard 3D Dynamique</h1>
-        <div style="font-size: 0.85rem; color: #64748b;">⏱️ Généré le : <b>07/11/2026 à 13:35:42</b></div>
+        <div style="font-size: 0.85rem; color: #64748b;">⏱️ Généré le : <b>10/11/2026 à 15:13:51</b></div>
     </div>
 
     <div class="card">
         <h2>Visualiseur du Projet</h2>
-        <p><b>Nom du projet :</b> <span class="badge">Boitier de protection électronique</span></p>
-        <p><b>Matériau recommandé :</b> <b>PLA+</b></p>
+        <p><b>Nom du projet :</b> <span class="badge">Support mural inclinable pour caméra de sécurité</span></p>
+        <p><b>Matériau recommandé :</b> <b>PETG</b></p>
         <div id="viewer-container"></div>
         <p style="text-align:center; font-size:0.85rem; color:#64748b; margin-top: 10px;">💡 Glissez avec la souris ou au doigt pour faire pivoter le modèle 3D.</p>
     </div>
@@ -45,19 +45,19 @@
     <div class="grid-stats">
         <div class="stat-card">
             <h3>Hauteur de couche</h3>
-            <p>0.16 mm</p>
+            <p>0.2 mm</p>
         </div>
         <div class="stat-card">
             <h3>Remplissage (Infill)</h3>
-            <p>20% (Grid)</p>
+            <p>35% (Gyroid)</p>
         </div>
         <div class="stat-card">
             <h3>Nombre de parois</h3>
-            <p>3 murs</p>
+            <p>4 murs</p>
         </div>
         <div class="stat-card">
             <h3>Supports d'impression</h3>
-            <p>Non</p>
+            <p>Oui (Brim)</p>
         </div>
     </div>
 
@@ -65,9 +65,9 @@
         <h2>🛠️ Checklist de Fabrication</h2>
         <div class="progress-bar"><div id="progress" class="progress-fill"></div></div>
         <ul>
-            <li><input type="checkbox" onchange="updateProgress()"> Préparation du design 3D pour : Boitier de protection électronique</li>
+            <li><input type="checkbox" onchange="updateProgress()"> Préparation du design 3D pour : Support mural inclinable pour caméra de sécurité</li>
             <li><input type="checkbox" onchange="updateProgress()"> Calibration du plateau et vérification du Z-Offset.</li>
-            <li><input type="checkbox" onchange="updateProgress()"> Lancement du Slicing avec le matériau PLA+.</li>
+            <li><input type="checkbox" onchange="updateProgress()"> Lancement du Slicing avec le matériau PETG.</li>
             <li><input type="checkbox" onchange="updateProgress()"> Contrôle qualité final et assemblage.</li>
         </ul>
     </div>
@@ -94,10 +94,18 @@
         const group = new THREE.Group();
         
         
-        const boxGeo = new THREE.BoxGeometry(45, 20, 35);
-        const boxMat = new THREE.MeshStandardMaterial({ color: 0x10b981, roughness: 0.4 });
-        const box = new THREE.Mesh(boxGeo, boxMat);
-        group.add(box);
+        const baseGeo = new THREE.BoxGeometry(40, 10, 30);
+        const baseMat = new THREE.MeshStandardMaterial({ color: 0x3b82f6, roughness: 0.3 });
+        const base = new THREE.Mesh(baseGeo, baseMat);
+        base.position.y = -5;
+        group.add(base);
+
+        const cylGeo = new THREE.CylinderGeometry(8, 8, 25, 32);
+        const cylMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.8 });
+        const cylinder = new THREE.Mesh(cylGeo, cylMat);
+        cylinder.rotation.z = Math.PI / 4;
+        cylinder.position.set(0, 10, 0);
+        group.add(cylinder);
         
 
         scene.add(group);
